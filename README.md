@@ -1,12 +1,41 @@
-# React + Vite
+# Projeto Formulário de Melhoria - Backend Flask + Odoo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descrição
 
-Currently, two official plugins are available:
+Este projeto é um backend em Flask que expõe uma API REST para criar e listar sugestões de melhoria. Os dados são armazenados no Odoo via integração XML-RPC, utilizando um model customizado chamado `sugestao.melhoria`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A aplicação permite a comunicação entre um frontend e o Odoo, possibilitando o cadastro e consulta de sugestões através da API.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tecnologias
+
+- Python 3.7+
+- Flask
+- Flask-CORS
+- XML-RPC (para comunicação com Odoo)
+- Odoo (backend ERP, versão compatível com XML-RPC)
+
+---
+
+## Estrutura do Projeto
+
+- `app.py`: aplicação Flask que expõe endpoints REST para criar e listar sugestões.
+- `odoo_client.py`: cliente que realiza a comunicação com o Odoo via XML-RPC.
+- `.env`: arquivo com variáveis de ambiente para configurar acesso ao Odoo.
+- Frontend separado (não incluso aqui) que consome essa API.
+
+---
+
+## Configuração
+
+### Pré-requisitos
+
+- Odoo instalado e configurado
+- Módulo customizado com model `sugestao.melhoria` instalado e atualizado no Odoo
+- Python 3.7+ instalado
+
+### Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
