@@ -35,7 +35,4 @@ A aplicação permite a comunicação entre um frontend e o Odoo, possibilitando
 - Módulo customizado com model `sugestao.melhoria` instalado e atualizado no Odoo
 - Python 3.7+ instalado
 
-### Variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
