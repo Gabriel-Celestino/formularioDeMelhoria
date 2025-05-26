@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./style.css";
 
@@ -7,21 +7,21 @@ function Home() {
   const [descricao, setDescricao] = useState("");
   const [sugestoes, setSugestoes] = useState([]);
 
-  // Busca todas as sugestões do backend
-  const fetchSugestoes = async () => {
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  const fetchSugestoes = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/sugestoes");
+      const response = await axios.get(`${API_URL}/api/sugestoes`);
       setSugestoes(response.data);
     } catch (error) {
       console.error("Erro ao buscar sugestões:", error);
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     fetchSugestoes();
-  }, []);
+  }, [fetchSugestoes]);
 
-  // Envia uma nova sugestão para o backend
   const handleSubmit = async () => {
     if (!nome || !descricao) {
       alert("Por favor, preencha todos os campos.");
@@ -29,14 +29,10 @@ function Home() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/sugestoes", {
-        nome,
-        descricao,
-      });
-
+      await axios.post(`${API_URL}/api/sugestoes`, { nome, descricao });
       setNome("");
       setDescricao("");
-      fetchSugestoes(); // Atualiza a lista após envio
+      fetchSugestoes();
     } catch (error) {
       console.error("Erro ao enviar sugestão:", error);
       alert("Erro ao enviar sugestão. Tente novamente.");
@@ -77,9 +73,14 @@ function Home() {
             Melhoria: <span>{user.descricao}</span>
           </p>
           <br />
-          <p>
-            Data de Envio: <span>{new Date(user.data_envio).toLocaleString()}</span>
-          </p>
+          {user.data_envio ? (
+            <p>
+              Data de Envio:{" "}
+              <span>{new Date(user.data_envio).toLocaleString()}</span>
+            </p>
+          ) : (
+            <p>Data de Envio: <span>Não informada</span></p>
+          )}
         </div>
       ))}
     </div>
