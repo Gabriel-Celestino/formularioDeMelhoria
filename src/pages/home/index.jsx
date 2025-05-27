@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import "./style.css";
 
 function Home() {
@@ -11,8 +10,15 @@ function Home() {
 
   const fetchSugestoes = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/sugestoes`);
-      setSugestoes(response.data);
+      const response = await fetch(`${API_URL}/api/sugestoes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await response.json();
+      setSugestoes(data);
     } catch (error) {
       console.error("Erro ao buscar sugestões:", error);
     }
@@ -22,17 +28,31 @@ function Home() {
     fetchSugestoes();
   }, [fetchSugestoes]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!nome || !descricao) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
 
     try {
-      await axios.post(`${API_URL}/api/sugestoes`, { nome, descricao });
-      setNome("");
-      setDescricao("");
-      fetchSugestoes();
+      const response = await fetch(`${API_URL}/api/sugestoes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, descricao })
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        alert("Erro: " + data.erro);
+      } else {
+        setNome("");
+        setDescricao("");
+        fetchSugestoes();
+      }
     } catch (error) {
       console.error("Erro ao enviar sugestão:", error);
       alert("Erro ao enviar sugestão. Tente novamente.");
@@ -41,7 +61,7 @@ function Home() {
 
   return (
     <div className="container">
-      <form>
+      <form onSubmit={handleSubmit}>
         <h1>Formulário de Melhoria</h1>
         <input
           name="Nome"
@@ -50,21 +70,18 @@ function Home() {
           value={nome}
           onChange={(e) => setNome(e.target.value)}
         />
-        <input
+        <textarea
           name="Descrição da Melhoria"
-          type="text"
           placeholder="O que você gostaria de melhoria?"
           value={descricao}
           onChange={(e) => setDescricao(e.target.value)}
         />
 
-        <button type="button" onClick={handleSubmit}>
-          Enviar
-        </button>
+        <button type="submit">Enviar</button>
       </form>
 
-      {sugestoes.map((user, index) => (
-        <div className="card" key={index}>
+      {sugestoes.map((user) => (
+        <div className="card" key={user.id}>
           <p>
             Nome: <span>{user.nome}</span>
           </p>
@@ -75,11 +92,12 @@ function Home() {
           <br />
           {user.data_envio ? (
             <p>
-              Data de Envio:{" "}
-              <span>{new Date(user.data_envio).toLocaleString()}</span>
+              Data de Envio: <span>{new Date(user.data_envio).toLocaleString()}</span>
             </p>
           ) : (
-            <p>Data de Envio: <span>Não informada</span></p>
+            <p>
+              Data de Envio: <span>Não informada</span>
+            </p>
           )}
         </div>
       ))}
